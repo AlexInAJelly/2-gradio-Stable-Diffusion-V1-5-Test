@@ -1,0 +1,21 @@
+!pip install gradio diffusers accelerate
+
+from diffusers import StableDiffusionPipeline
+import torch
+
+model_id = "CompVis/stable-diffusion-v1-4"
+pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+pipe = pipe.to("cuda")
+
+def gen_image(prompt):
+  image = pipe(prompt).images[0]
+  return image
+import gradio as gr
+
+iface = gr.Interface(
+    fn=gen_image,
+    inputs="text",
+    outputs="image"
+)
+
+iface.launch(share=True, debug=True)
